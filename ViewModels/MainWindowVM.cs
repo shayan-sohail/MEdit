@@ -79,15 +79,14 @@ namespace MEdit.ViewModels
         public ICommand OnDropCommand { get; private set; }
         public ICommand OnDragOverCommand { get; private set; }
         public ICommand OnBrowseCommand { get; private set; }
-        public ICommand SortCommand { get; private set; }
         public ICommand UpdateCommand {get;}
         public ICommand ExitCommand { get; }
 
 
-        private ObservableCollection<string> _items;
+        private ObservableCollection<FileMetaData> _items;
 
         private bool ascendingSort = false;
-        public ObservableCollection<string> Items
+        public ObservableCollection<FileMetaData> Items
         {
             get => _items;
             set
@@ -137,11 +136,10 @@ namespace MEdit.ViewModels
             OnBrowseCommand = new RelayCommand(ExecuteBrowse);
             OnDropCommand = new RelayCommand(DropExecute);
             OnDragOverCommand = new RelayCommand(DragOverExecute);
-            SortCommand = new RelayCommand(SortItems);
             UpdateCommand = new RelayCommand(UpdateFields);
             ExitCommand = new RelayCommand(ExitApplication);
 
-            Items = new ObservableCollection<string>();
+            Items = new ObservableCollection<FileMetaData>();
         }
 
         void AddItemToFiles(string filePath)
@@ -149,8 +147,9 @@ namespace MEdit.ViewModels
             var fileName = System.IO.Path.GetFileName(filePath);
             if (!ItemMetaData.ContainsKey(fileName))
             {
-                Items.Add(fileName);
-                ItemMetaData.Add(fileName, new FileMetaData(filePath));
+                var metaData = new FileMetaData(filePath);
+                Items.Add(metaData);
+                ItemMetaData.Add(fileName, metaData);
             }
         }
 
@@ -159,8 +158,8 @@ namespace MEdit.ViewModels
             var fileName = System.IO.Path.GetFileName(filePath);
             if (ItemMetaData.ContainsKey(fileName))
             {
+                Items.Remove(ItemMetaData[filePath]);
                 ItemMetaData.Remove(filePath);
-                Items.Remove(System.IO.Path.GetFileName(filePath));
             }
         }
         private void ExecuteBrowse(object parameter)
@@ -186,21 +185,6 @@ namespace MEdit.ViewModels
                 foreach (var file in files)
                     AddItemToFiles(file);
             }
-        }
-
-        private void SortItems(object parameter)
-        {
-            if (ascendingSort)
-            {
-                var sortedList = Items.OrderBy(item => item).ToList();
-                Items = new ObservableCollection<string>(sortedList);
-            }
-            else
-            {
-                var sortedList = Items.OrderByDescending(item => item).ToList();
-                Items = new ObservableCollection<string>(sortedList);
-            }
-            ascendingSort = !ascendingSort;
         }
 
         private void UpdateFields(object parameter)

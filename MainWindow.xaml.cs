@@ -51,16 +51,5 @@ namespace MEdit
             Textblock.Visibility = Visibility.Hidden;
             StackPanelContent.Opacity = 1;
         }
-
-        private void DataGrid_Sorting(object sender, DataGridSortingEventArgs e)
-        {
-            if (DataContext is MainWindowVM viewModel)
-            {
-                viewModel.SortCommand.Execute(e.Column.Header);
-            }
-
-            // Optionally, you can prevent the default sorting behavior:
-            // e.Handled = true;
-        }
     }
 }

@@ -40,11 +40,9 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" MinWidth="150"/>
+            <ColumnDefinition Width="*" MinWidth="150"/>
             <ColumnDefinition Width="4"/>
             <ColumnDefinition Width="2*" MinWidth="250"/>
-            <ColumnDefinition Width="4"/>
-            <ColumnDefinition Width="3*" MinWidth="300"/>
         </Grid.ColumnDefinitions>
         
         <TextBlock x:Name="Textblock" 
@@ -103,18 +101,32 @@
         </Grid>
 
         <DataGrid Grid.Column="2" Grid.Row="0" FontFamily="SF Pro Display" 
-            ItemsSource="{Binding Items}"
-            SelectedItem="{Binding SelectedItem}"
-            RowHeaderWidth="0"
-            Margin="0 10 0 10" 
-            Sorting="DataGrid_Sorting"
-            Background="Transparent"
-            HorizontalGridLinesBrush="Transparent"
-            VerticalGridLinesBrush="Transparent"
-            IsReadOnly="True"
-            AutoGenerateColumns="False">
+          ItemsSource="{Binding Items}"
+          SelectedItem="{Binding SelectedItem}"
+          RowHeaderWidth="0"
+          Margin="0 10 10 10" 
+          Background="Transparent"
+          HorizontalGridLinesBrush="Transparent"
+          VerticalGridLinesBrush="Transparent"
+          AutoGenerateColumns="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Name" Binding="{Binding}" Width="*">
+                <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}" Width="*">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="5"/>
+                            <Setter Property="FontSize" Value="13"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="File Size" Binding="{Binding Size}" Width="*" IsReadOnly="True">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Padding" Value="5"/>
+                            <Setter Property="FontSize" Value="13"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Date Modified" Binding="{Binding DateModified}" IsReadOnly="True" Width="*">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="Padding" Value="5"/>
@@ -125,65 +137,6 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <Border Grid.Row="0" Grid.Column="4" Padding="5" Margin="5 10 10 10" BorderBrush="Gray" BorderThickness="0.5">
-            <StackPanel  Orientation="Vertical" >
-
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Style="{StaticResource CustomLabel}" Grid.Column="0" VerticalAlignment="Center" Content="File Name"/>
-                    <TextBox Style="{StaticResource CustomTextBox}" Grid.Column="1" Padding="2 3 2 0" Text="{Binding SelectedFileMetaData.Name}"/>
-                </Grid>
-                
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Style="{StaticResource CustomLabel}" Grid.Column="0" VerticalAlignment="Center" Content="File Type"/>
-                    <TextBox Style="{StaticResource CustomTextBox}" Grid.Column="1" Padding="2 3 2 0" Text="{Binding SelectedFileMetaData.Type}"/>
-                </Grid>
-
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Style="{StaticResource CustomLabel}" Grid.Column="0" VerticalAlignment="Center" Content="File Size"/>
-                    <TextBox IsReadOnly="True" Style="{StaticResource CustomTextBox}" Grid.Column="1" Padding="2 3 2 0" Text="{Binding SelectedFileMetaData.Size}"/>
-                </Grid>
-
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Style="{StaticResource CustomLabel}" Grid.Column="0" VerticalAlignment="Center" Content="Date Created"/>
-                    <TextBox Style="{StaticResource CustomTextBox}" Grid.Column="1" Padding="2 3 2 0" Text="{Binding SelectedFileMetaData.DateCreatedString}"/>
-                </Grid>
-
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Style="{StaticResource CustomLabel}" Grid.Column="0" VerticalAlignment="Center" Content="Date Accessed"/>
-                    <TextBox Style="{StaticResource CustomTextBox}" Grid.Column="1" Padding="2 3 2 0" Text="{Binding SelectedFileMetaData.DateAccessedString}"/>
-                </Grid>
-
-                <Grid Margin="5">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label Style="{StaticResource CustomLabel}" Grid.Column="0" VerticalAlignment="Center" Content="Date Modified"/>
-                    <TextBox Style="{StaticResource CustomTextBox}" Grid.Column="1" Padding="2 3 2 0" Text="{Binding SelectedFileMetaData.DateModifiedString}"/>
-                </Grid>
-
-            </StackPanel>
-        </Border>
 
         <StackPanel Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10">
             <Button Style="{StaticResource CustomButton}" Content="Update" Margin="10 0 10 10" Height="25" Width="100" ToolTip="Click to update the properties"
@@ -192,7 +145,6 @@
                     Command="{Binding ExitCommand}"/>
         </StackPanel>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="Transparent"/>
-        <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Background="Transparent"/>
     </Grid>
 
 </Window>
