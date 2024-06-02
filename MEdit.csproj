@@ -71,6 +71,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Commands\RelayCommand.cs" />
+    <Compile Include="Converters\HeaderToBooleanConverter.cs" />
+    <Compile Include="Converters\VisibilityToBooleanConverter.cs" />
     <Compile Include="ViewModels\MainWindowVM.cs" />
     <Compile Include="ViewModels\PropertiesEditorVM.cs" />
     <Page Include="MainWindow.xaml">
@@ -113,19 +115,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Windows\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Images\delete.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\delete_32x32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\delete_16x16.png" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

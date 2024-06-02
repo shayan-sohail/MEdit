@@ -74,18 +74,72 @@ namespace MEdit.ViewModels
         }
 }
 
+    public class MenuItem
+    {
+        public string Header { get; set; }
+
+        public bool IsCheckable { get; set; }
+        public bool IsEnabled { get; set; }
+        private bool _ischecked;
+        public bool IsChecked
+        {
+            get
+            {
+                return _ischecked;
+            }
+            set
+            {
+                if (value != _ischecked)
+                {
+                    _ischecked = value;
+                    Command?.Execute(this);
+                }
+            }
+        }
+
+        public ICommand Command { get; set; }
+
+        public MenuItem(string header, ICommand command, bool isEnabled = true, bool isCheckable = true)
+        {
+            Header = header;
+            Command = command;
+            IsCheckable = isCheckable;
+            IsEnabled = isEnabled;
+            IsChecked = isCheckable;
+        }
+    }
     public class MainWindowVM : INotifyPropertyChanged
     {
         public ICommand OnDropCommand { get; private set; }
         public ICommand OnDragOverCommand { get; private set; }
-        public ICommand OnBrowseCommand { get; private set; }
+        public ICommand BrowseCommand { get; private set; }
         public ICommand UpdateCommand {get;}
         public ICommand ExitCommand { get; }
+        public ICommand UpdateColumnVisibilityCommand { get; }
 
+        private Visibility _sizeVisibility;
+        public Visibility SizeVisibility
+        {
+            get { return _sizeVisibility; }
+            set
+            {
+                _sizeVisibility = value;
+                OnPropertyChanged(nameof(SizeVisibility));
+            }
+        }
+        private Visibility _dateModifiedVisibility;
+        public Visibility DateModifiedVisibility
+        {
+            get { return _dateModifiedVisibility; }
+            set
+            {
+                _dateModifiedVisibility = value;
+                OnPropertyChanged(nameof(DateModifiedVisibility));
+            }
+        }
 
         private ObservableCollection<FileMetaData> _items;
 
-        private bool ascendingSort = false;
         public ObservableCollection<FileMetaData> Items
         {
             get => _items;
@@ -96,6 +150,7 @@ namespace MEdit.ViewModels
             }
         }
 
+        public ObservableCollection<MenuItem> MenuItems { get; set; }
         private Dictionary<string, FileMetaData> ItemMetaData = new Dictionary<string, FileMetaData>();
 
         private string _selectedItem;
@@ -133,13 +188,23 @@ namespace MEdit.ViewModels
 
         public MainWindowVM()
         {
-            OnBrowseCommand = new RelayCommand(ExecuteBrowse);
+            BrowseCommand = new RelayCommand(ExecuteBrowse);
             OnDropCommand = new RelayCommand(DropExecute);
             OnDragOverCommand = new RelayCommand(DragOverExecute);
             UpdateCommand = new RelayCommand(UpdateFields);
             ExitCommand = new RelayCommand(ExitApplication);
+            UpdateColumnVisibilityCommand = new RelayCommand(UpdateColumnVisibility);
 
             Items = new ObservableCollection<FileMetaData>();
+            SizeVisibility = Visibility.Collapsed;
+
+            MenuItems = new ObservableCollection<MenuItem>
+            {
+                new MenuItem("Name", null, false, false),
+                new MenuItem("Size", UpdateColumnVisibilityCommand),
+                new MenuItem("Date Modified", UpdateColumnVisibilityCommand)
+
+            };
         }
 
         void AddItemToFiles(string filePath)
@@ -186,7 +251,16 @@ namespace MEdit.ViewModels
                     AddItemToFiles(file);
             }
         }
-
+        private void UpdateColumnVisibility(object parameter)
+        {
+            if (parameter is MenuItem item)
+            {
+                if (item.Header == "Size")
+                    SizeVisibility = item.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+                if (item.Header == "Date Modified")
+                    DateModifiedVisibility = item.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
         private void UpdateFields(object parameter)
         {
             Application.Current.Shutdown(); // Exits the application

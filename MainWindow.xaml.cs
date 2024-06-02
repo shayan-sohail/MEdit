@@ -24,9 +24,8 @@ namespace MEdit
 
         private void Window_Drop(object sender, DragEventArgs e)
         {
-            //Rect.Visibility = Visibility.Hidden;
             Textblock.Visibility = Visibility.Hidden;
-            StackPanelContent.Opacity = 1;
+            DataGrid.Opacity = 1;
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
@@ -40,16 +39,34 @@ namespace MEdit
 
         private void Window_DragEnter(object sender, DragEventArgs e)
         {
-            //Rect.Visibility = Visibility.Visible;
             Textblock.Visibility = Visibility.Visible;
-            StackPanelContent.Opacity = 0.1;
+            DataGrid.Opacity = 0.3;
         }
 
         private void Window_DragLeave(object sender, DragEventArgs e)
         {
-            //Rect.Visibility = Visibility.Hidden;
             Textblock.Visibility = Visibility.Hidden;
-            StackPanelContent.Opacity = 1;
+            DataGrid.Opacity = 1;
+        }
+
+        private void Window_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == System.Windows.Input.ModifierKeys.Control && e.Key == System.Windows.Input.Key.O)
+            {
+                var viewModel = DataContext as MainWindowVM;
+                viewModel.BrowseCommand.Execute(null);
+
+                e.Handled = true; // Mark the event as handled
+            }
+        }
+
+        private void DataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.OriginalSource is ScrollViewer)
+            {
+                var viewModel = DataContext as MainWindowVM;
+                viewModel.BrowseCommand.Execute(null);
+            }
         }
     }
 }
