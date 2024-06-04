@@ -151,6 +151,8 @@ namespace MEdit.ViewModels
         }
 
         public ObservableCollection<MenuItem> MenuItems { get; set; }
+        public ObservableCollection<MenuItem> ElementMenuItems { get; set; }
+
         private Dictionary<string, FileMetaData> ItemMetaData = new Dictionary<string, FileMetaData>();
 
         private string _selectedItem;
@@ -186,8 +188,10 @@ namespace MEdit.ViewModels
             }
         }
 
-        public MainWindowVM()
+        public MainWindow View;
+        public MainWindowVM(MainWindow view)
         {
+            View = view;
             BrowseCommand = new RelayCommand(ExecuteBrowse);
             OnDropCommand = new RelayCommand(DropExecute);
             OnDragOverCommand = new RelayCommand(DragOverExecute);
@@ -203,8 +207,14 @@ namespace MEdit.ViewModels
                 new MenuItem("Name", null, false, false),
                 new MenuItem("Size", UpdateColumnVisibilityCommand),
                 new MenuItem("Date Modified", UpdateColumnVisibilityCommand)
-
             };
+
+            ElementMenuItems = new ObservableCollection<MenuItem>
+            {
+                new MenuItem("Edit", new RelayCommand(obj => View.DataGrid.BeginEdit())),
+                new MenuItem("Remove", null, false, false)
+            };
+
         }
 
         void AddItemToFiles(string filePath)

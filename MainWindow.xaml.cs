@@ -13,7 +13,7 @@ namespace MEdit
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowVM();
+            DataContext = new MainWindowVM(this);
         }
 
         private void Window_DragOver(object sender, DragEventArgs e)
@@ -67,6 +67,12 @@ namespace MEdit
                 var viewModel = DataContext as MainWindowVM;
                 viewModel.BrowseCommand.Execute(null);
             }
+        }
+
+        private void DataGrid_PreparingCellForEdit(object sender, DataGridPreparingCellForEditEventArgs e)
+        {
+            if (e.EditingEventArgs is System.Windows.Input.MouseButtonEventArgs)
+                DataGrid.CancelEdit();
         }
     }
 }

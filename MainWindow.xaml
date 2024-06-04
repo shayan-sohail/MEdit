@@ -72,7 +72,7 @@
             </Style.Triggers>
         </Style>
 
-        <ContextMenu x:Key="ColumnChooserMenu" x:Shared="False"
+        <ContextMenu x:Key="GridColumnsContextMenu" x:Shared="False"
                      DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
              ItemsSource="{Binding MenuItems}">
             <ContextMenu.ItemContainerStyle>
@@ -85,13 +85,21 @@
             </ContextMenu.ItemContainerStyle>
         </ContextMenu>
 
+        <ContextMenu x:Key="GridItemsContextMenu" 
+                     ItemsSource="{Binding DataContext.ElementMenuItems, Source={x:Reference dummyElement}}">
+            <ContextMenu.ItemContainerStyle>
+                <Style TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Header}"/>
+                    <Setter Property="Command" Value="{Binding Command}"/>
+                </Style>
+            </ContextMenu.ItemContainerStyle>
+        </ContextMenu>
+        
         <Style x:Key="ColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
-            <Setter Property="ContextMenu" Value="{StaticResource ColumnChooserMenu}" />
+            <Setter Property="ContextMenu" Value="{StaticResource GridColumnsContextMenu}" />
         </Style>
 
-        <ContextMenu x:Key="GridItemsContextMenu" >
-            <MenuItem Header="Launch Do Some other action"/>
-        </ContextMenu>
+        
     </Window.Resources>
 
     <Grid>
@@ -120,27 +128,30 @@
             FontWeight="Bold" 
             Visibility="Hidden"/>
         <FrameworkElement x:Name="dummyElement" Visibility="Collapsed"/>
+        
+        
         <DataGrid FontFamily="SF Pro Display" 
           x:Name="DataGrid"
           ItemsSource="{Binding Items}"
-          SelectedItem="{Binding SelectedItem}"
           ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
-          ContextMenu="{StaticResource GridItemsContextMenu}"
+          SelectedItem="{Binding SelectedItem}"
           RowHeaderWidth="0"
           Margin="10" 
           Background="Transparent"
           HorizontalGridLinesBrush="Transparent"
           VerticalGridLinesBrush="Transparent"
           MouseDoubleClick="DataGrid_MouseDoubleClick"
-          AutoGenerateColumns="False"
-                  >
+                PreparingCellForEdit="DataGrid_PreparingCellForEdit"
+          AutoGenerateColumns="False">
 
             <DataGrid.Columns>
+                
                 <DataGridTextColumn Header="Name" Binding="{Binding Name, Mode=TwoWay}" Width="2*">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="Padding" Value="5"/>
                             <Setter Property="FontSize" Value="13"/>
+                            <Setter Property="ContextMenu" Value="{StaticResource GridItemsContextMenu}"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
@@ -150,7 +161,8 @@
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
-                <DataGridTextColumn Header="File Size" Binding="{Binding Size}" Width="*" IsReadOnly="True" 
+                
+                <DataGridTextColumn Header="File Size" Binding="{Binding Size}" Width="*" IsReadOnly="True"
                                     Visibility="{Binding DataContext.SizeVisibility, Mode=TwoWay, Source={x:Reference dummyElement}}">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
@@ -159,6 +171,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
+                
                 <DataGridTextColumn Header="Date Modified" Binding="{Binding DateModified}" IsReadOnly="True" Width="*"
                                     Visibility="{Binding DataContext.DateModifiedVisibility, Mode=TwoWay, Source={x:Reference dummyElement}}">
                     <DataGridTextColumn.ElementStyle>
@@ -168,6 +181,7 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
+                
             </DataGrid.Columns>
         </DataGrid>
 
