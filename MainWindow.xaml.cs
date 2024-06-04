@@ -74,5 +74,13 @@ namespace MEdit
             if (e.EditingEventArgs is System.Windows.Input.MouseButtonEventArgs)
                 DataGrid.CancelEdit();
         }
+
+        private void DataGrid_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.KeyboardDevice.Modifiers == System.Windows.Input.ModifierKeys.None && e.Key == System.Windows.Input.Key.F2)
+            {
+                DataGrid.BeginEdit();
+            }
+        }
     }
 }

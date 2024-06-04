@@ -142,6 +142,7 @@
           VerticalGridLinesBrush="Transparent"
           MouseDoubleClick="DataGrid_MouseDoubleClick"
                 PreparingCellForEdit="DataGrid_PreparingCellForEdit"
+                  PreviewKeyDown="DataGrid_PreviewKeyDown"
           AutoGenerateColumns="False">
 
             <DataGrid.Columns>
