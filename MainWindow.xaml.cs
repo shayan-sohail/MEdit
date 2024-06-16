@@ -82,5 +82,33 @@ namespace MEdit
                 DataGrid.BeginEdit();
             }
         }
+
+        private void DataGrid_CurrentCellChanged(object sender, System.EventArgs e)
+        {
+            var viewModel = DataContext as MainWindowVM;
+            var datagrid = sender as DataGrid;
+            var selItem = datagrid.SelectedValue as FileMetaData;
+
+            if (selItem == null)
+                return;
+
+            foreach (var item in viewModel.Items)
+            {
+                if (selItem != null && selItem.Id == item.Id)
+                {
+                    FileMetaData org = null;
+                    foreach (var kvp in viewModel.OriginalInfo)
+                    {
+                        if (kvp.Value.Id == item.Id)
+                            org = kvp.Value;
+                    }
+
+                    if (selItem.Name == org.Name)
+                        item.IsChanged = false;
+                    else
+                        item.IsChanged = true;
+                }
+            }
+        }
     }
 }

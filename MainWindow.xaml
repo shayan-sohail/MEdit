@@ -23,6 +23,8 @@
     <Window.Resources>
         <converters:VisibilityToBooleanConverter x:Key="VisibilityToBooleanConverter"/>
         <converters:HeaderToBooleanConverter x:Key="HeaderToBooleanConverter"/> 
+        
+        <!--Green Button-->
         <Style x:Key="PositiveButton" TargetType="Button">
             <Setter Property="Background" Value="Green"/>
             <Setter Property="Foreground" Value="WhiteSmoke"/>
@@ -47,6 +49,8 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        
+        <!--Red Button-->
         <Style x:Key="NegativeButton" TargetType="Button">
             <Setter Property="Background" Value="Firebrick"/>
             <Setter Property="Foreground" Value="WhiteSmoke"/>
@@ -72,9 +76,10 @@
             </Style.Triggers>
         </Style>
 
-        <ContextMenu x:Key="GridColumnsContextMenu" x:Shared="False"
+        <!--Columns Context menu that tells whether to hide or show any columns-->
+        <ContextMenu x:Key="GridColumnsContextMenu"
                      DataContext="{Binding DataContext, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
-             ItemsSource="{Binding MenuItems}">
+                     ItemsSource="{Binding MenuItems}">
             <ContextMenu.ItemContainerStyle>
                 <Style TargetType="MenuItem">
                     <Setter Property="Header" Value="{Binding Header}"/>
@@ -85,8 +90,8 @@
             </ContextMenu.ItemContainerStyle>
         </ContextMenu>
 
-        <ContextMenu x:Key="GridItemsContextMenu" 
-                     ItemsSource="{Binding DataContext.ElementMenuItems, Source={x:Reference dummyElement}}">
+        <ContextMenu x:Key="GridNameItemContextMenu" 
+                     ItemsSource="{Binding DataContext.ElementNameMenuItems, Source={x:Reference dummyElement}}">
             <ContextMenu.ItemContainerStyle>
                 <Style TargetType="MenuItem">
                     <Setter Property="Header" Value="{Binding Header}"/>
@@ -94,12 +99,20 @@
                 </Style>
             </ContextMenu.ItemContainerStyle>
         </ContextMenu>
-        
+
+        <ContextMenu x:Key="GridDateItemContextMenu" 
+                     ItemsSource="{Binding DataContext.ElementDateMenuItems, Source={x:Reference dummyElement}}">
+            <ContextMenu.ItemContainerStyle>
+                <Style TargetType="MenuItem">
+                    <Setter Property="Header" Value="{Binding Header}"/>
+                    <Setter Property="Command" Value="{Binding Command}"/>
+                </Style>
+            </ContextMenu.ItemContainerStyle>
+        </ContextMenu>
+
         <Style x:Key="ColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
             <Setter Property="ContextMenu" Value="{StaticResource GridColumnsContextMenu}" />
         </Style>
-
-        
     </Window.Resources>
 
     <Grid>
@@ -111,6 +124,7 @@
             <ColumnDefinition Width="*" MinWidth="150"/>
         </Grid.ColumnDefinitions>
         
+        <!--Shadow Text for drag & drop files-->
         <TextBlock x:Name="Textblock" 
             Margin="10"
             Background="Transparent"
@@ -128,22 +142,35 @@
             FontWeight="Bold" 
             Visibility="Hidden"/>
         <FrameworkElement x:Name="dummyElement" Visibility="Collapsed"/>
-        
-        
+
+
         <DataGrid FontFamily="SF Pro Display" 
-          x:Name="DataGrid"
-          ItemsSource="{Binding Items}"
-          ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
-          SelectedItem="{Binding SelectedItem}"
-          RowHeaderWidth="0"
-          Margin="10" 
-          Background="Transparent"
-          HorizontalGridLinesBrush="Transparent"
-          VerticalGridLinesBrush="Transparent"
-          MouseDoubleClick="DataGrid_MouseDoubleClick"
-                PreparingCellForEdit="DataGrid_PreparingCellForEdit"
-                  PreviewKeyDown="DataGrid_PreviewKeyDown"
-          AutoGenerateColumns="False">
+            x:Name="DataGrid"
+            ItemsSource="{Binding Items}"
+            ColumnHeaderStyle="{StaticResource ColumnHeaderStyle}"
+            SelectedItem="{Binding SelectedItem}"
+            RowHeaderWidth="7"
+            SelectionMode="Single"
+            Margin="10" 
+            Background="Transparent"
+            HorizontalGridLinesBrush="Transparent"
+            VerticalGridLinesBrush="Transparent"
+            MouseDoubleClick="DataGrid_MouseDoubleClick"
+            PreparingCellForEdit="DataGrid_PreparingCellForEdit"
+            CurrentCellChanged="DataGrid_CurrentCellChanged"
+            PreviewKeyDown="DataGrid_PreviewKeyDown"
+            AutoGenerateColumns="False">
+
+            <!--Change row header background color whenever IsChanged property is updated-->
+            <DataGrid.RowHeaderStyle>
+                <Style TargetType="DataGridRowHeader">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsChanged}" Value="True">
+                            <Setter Property="Background" Value="Pink"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowHeaderStyle>
 
             <DataGrid.Columns>
                 
@@ -152,7 +179,7 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="Padding" Value="5"/>
                             <Setter Property="FontSize" Value="13"/>
-                            <Setter Property="ContextMenu" Value="{StaticResource GridItemsContextMenu}"/>
+                            <Setter Property="ContextMenu" Value="{StaticResource GridNameItemContextMenu}"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
@@ -179,6 +206,7 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="Padding" Value="5"/>
                             <Setter Property="FontSize" Value="13"/>
+                            <Setter Property="ContextMenu" Value="{StaticResource GridDateItemContextMenu}"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>

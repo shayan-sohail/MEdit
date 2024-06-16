@@ -10,6 +10,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Text;
 using System;
+using System.Windows.Media;
 
 namespace MEdit.ViewModels
 {
@@ -19,6 +20,7 @@ namespace MEdit.ViewModels
         public string Name { get; set; }
         public string Type { get; set; }
         public long Size {get; set;}
+        public long Id { get; set; }
         public DateTime DateCreated {get; set;}
         public DateTime DateAccessed {get; set;}
         public DateTime DateModified {get; set;}
@@ -31,9 +33,27 @@ namespace MEdit.ViewModels
         public string ProductVersion {get; set;}
         public string CompanyName {get; set;}
         public string Description {get; set;}
-
-        public FileMetaData(string filePath)
+        private bool _ischanged = false;
+        public bool IsChanged
         {
+            get
+            {
+                return _ischanged;
+            }
+            set
+            {
+                if (value != _ischanged)
+                {
+                    _ischanged = value;
+                }
+                OnPropertyChanged(nameof(IsChanged));
+            }
+        }
+
+        public FileMetaData(string filePath, long id)
+        {
+
+            Id = id;
             Path = filePath;
             UpdateMetadata();
         }
@@ -108,6 +128,7 @@ namespace MEdit.ViewModels
             IsChecked = isCheckable;
         }
     }
+    
     public class MainWindowVM : INotifyPropertyChanged
     {
         public ICommand OnDropCommand { get; private set; }
@@ -138,6 +159,7 @@ namespace MEdit.ViewModels
             }
         }
 
+        public Brush HeaderColor = Brushes.Pink;
         private ObservableCollection<FileMetaData> _items;
 
         public ObservableCollection<FileMetaData> Items
@@ -151,9 +173,10 @@ namespace MEdit.ViewModels
         }
 
         public ObservableCollection<MenuItem> MenuItems { get; set; }
-        public ObservableCollection<MenuItem> ElementMenuItems { get; set; }
-
-        private Dictionary<string, FileMetaData> ItemMetaData = new Dictionary<string, FileMetaData>();
+        public ObservableCollection<MenuItem> ElementNameMenuItems { get; set; }
+        public ObservableCollection<MenuItem> ElementDateMenuItems { get; set; }
+        
+        public Dictionary<string, FileMetaData> OriginalInfo = new Dictionary<string, FileMetaData>();
 
         private string _selectedItem;
         public string SelectedItem
@@ -164,12 +187,8 @@ namespace MEdit.ViewModels
                 if (_selectedItem != value)
                 {
                     _selectedItem = value;
+                    SelectedFileMetaData = Items.FirstOrDefault(item => item.Name == _selectedItem);
                     OnPropertyChanged(nameof(SelectedItem));
-                    if (ItemMetaData.ContainsKey(_selectedItem))
-                    {
-                        SelectedFileMetaData = ItemMetaData[_selectedItem];
-                        SelectedFileMetaData.UpdateMetadata();
-                    }
                 }
             }
         }
@@ -209,34 +228,32 @@ namespace MEdit.ViewModels
                 new MenuItem("Date Modified", UpdateColumnVisibilityCommand)
             };
 
-            ElementMenuItems = new ObservableCollection<MenuItem>
+            ElementNameMenuItems = new ObservableCollection<MenuItem>
             {
                 new MenuItem("Edit", new RelayCommand(obj => View.DataGrid.BeginEdit())),
-                new MenuItem("Remove", null, false, false)
+                new MenuItem("Remove", null, false, false),
             };
 
+            ElementDateMenuItems = new ObservableCollection<MenuItem>
+            {
+                new MenuItem("Edit", new RelayCommand(obj => MessageBox.Show("Bado Badi"))),
+                new MenuItem("RemoveX", null, false, false),
+            };
         }
 
+        static long Id = 0;
         void AddItemToFiles(string filePath)
         {
             var fileName = System.IO.Path.GetFileName(filePath);
-            if (!ItemMetaData.ContainsKey(fileName))
+            
+            if (!OriginalInfo.ContainsKey(fileName))
             {
-                var metaData = new FileMetaData(filePath);
-                Items.Add(metaData);
-                ItemMetaData.Add(fileName, metaData);
+                //Not same instance
+                OriginalInfo.Add(fileName, new FileMetaData(filePath, Id));
+                Items.Add(new FileMetaData(filePath, Id++));
             }
         }
 
-        void RemoveItemFromFiles(string filePath)
-        {
-            var fileName = System.IO.Path.GetFileName(filePath);
-            if (ItemMetaData.ContainsKey(fileName))
-            {
-                Items.Remove(ItemMetaData[filePath]);
-                ItemMetaData.Remove(filePath);
-            }
-        }
         private void ExecuteBrowse(object parameter)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
