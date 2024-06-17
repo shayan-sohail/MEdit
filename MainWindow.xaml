@@ -89,19 +89,10 @@
                 </Style>
             </ContextMenu.ItemContainerStyle>
         </ContextMenu>
-
+        
+        <!--Context menu that appears when clicked on the name field of the datagrid-->
         <ContextMenu x:Key="GridNameItemContextMenu" 
                      ItemsSource="{Binding DataContext.ElementNameMenuItems, Source={x:Reference dummyElement}}">
-            <ContextMenu.ItemContainerStyle>
-                <Style TargetType="MenuItem">
-                    <Setter Property="Header" Value="{Binding Header}"/>
-                    <Setter Property="Command" Value="{Binding Command}"/>
-                </Style>
-            </ContextMenu.ItemContainerStyle>
-        </ContextMenu>
-
-        <ContextMenu x:Key="GridDateItemContextMenu" 
-                     ItemsSource="{Binding DataContext.ElementDateMenuItems, Source={x:Reference dummyElement}}">
             <ContextMenu.ItemContainerStyle>
                 <Style TargetType="MenuItem">
                     <Setter Property="Header" Value="{Binding Header}"/>
@@ -206,7 +197,6 @@
                         <Style TargetType="TextBlock">
                             <Setter Property="Padding" Value="5"/>
                             <Setter Property="FontSize" Value="13"/>
-                            <Setter Property="ContextMenu" Value="{StaticResource GridDateItemContextMenu}"/>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>

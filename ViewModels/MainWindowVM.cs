@@ -148,6 +148,7 @@ namespace MEdit.ViewModels
                 OnPropertyChanged(nameof(SizeVisibility));
             }
         }
+        
         private Visibility _dateModifiedVisibility;
         public Visibility DateModifiedVisibility
         {
@@ -174,12 +175,11 @@ namespace MEdit.ViewModels
 
         public ObservableCollection<MenuItem> MenuItems { get; set; }
         public ObservableCollection<MenuItem> ElementNameMenuItems { get; set; }
-        public ObservableCollection<MenuItem> ElementDateMenuItems { get; set; }
         
         public Dictionary<string, FileMetaData> OriginalInfo = new Dictionary<string, FileMetaData>();
 
-        private string _selectedItem;
-        public string SelectedItem
+        private FileMetaData _selectedItem;
+        public FileMetaData SelectedItem
         {
             get => _selectedItem;
             set
@@ -187,22 +187,7 @@ namespace MEdit.ViewModels
                 if (_selectedItem != value)
                 {
                     _selectedItem = value;
-                    SelectedFileMetaData = Items.FirstOrDefault(item => item.Name == _selectedItem);
                     OnPropertyChanged(nameof(SelectedItem));
-                }
-            }
-        }
-
-        private FileMetaData _selectedFileMetaData;
-        public FileMetaData SelectedFileMetaData
-        {
-            get => _selectedFileMetaData;
-            set
-            {
-                if (_selectedFileMetaData != value)
-                {
-                    _selectedFileMetaData = value;
-                    OnPropertyChanged(nameof(SelectedFileMetaData));
                 }
             }
         }
@@ -231,13 +216,7 @@ namespace MEdit.ViewModels
             ElementNameMenuItems = new ObservableCollection<MenuItem>
             {
                 new MenuItem("Edit", new RelayCommand(obj => View.DataGrid.BeginEdit())),
-                new MenuItem("Remove", null, false, false),
-            };
-
-            ElementDateMenuItems = new ObservableCollection<MenuItem>
-            {
-                new MenuItem("Edit", new RelayCommand(obj => MessageBox.Show("Bado Badi"))),
-                new MenuItem("RemoveX", null, false, false),
+                new MenuItem("Remove", new RelayCommand(obj => RemoveFile(SelectedItem.Path)), false, false)
             };
         }
 
@@ -251,6 +230,18 @@ namespace MEdit.ViewModels
                 //Not same instance
                 OriginalInfo.Add(fileName, new FileMetaData(filePath, Id));
                 Items.Add(new FileMetaData(filePath, Id++));
+            }
+        }
+
+        void RemoveFile(string filePath)
+        {
+            var fileName = System.IO.Path.GetFileName(filePath);
+
+            if (OriginalInfo.ContainsKey(fileName))
+            {
+                OriginalInfo.Remove(fileName);
+                var item = Items.FirstOrDefault((x) => x.Path == filePath);
+                Items.Remove(item);
             }
         }
 
