@@ -17,7 +17,6 @@ namespace MEdit.ViewModels
     public class FileMetaData : INotifyPropertyChanged
     {
         public string Path { get; set; }
-        public string Name { get; set; }
         public string Type { get; set; }
         public long Size {get; set;}
         public long Id { get; set; }
@@ -33,6 +32,24 @@ namespace MEdit.ViewModels
         public string ProductVersion {get; set;}
         public string CompanyName {get; set;}
         public string Description {get; set;}
+
+        private string _name { get; set; }
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if (value != _name)
+                {
+                    _name = value;
+                }
+                OnPropertyChanged(nameof(Name));
+            }
+        }
+
         private bool _ischanged = false;
         public bool IsChanged
         {
@@ -216,7 +233,8 @@ namespace MEdit.ViewModels
             ElementNameMenuItems = new ObservableCollection<MenuItem>
             {
                 new MenuItem("Edit", new RelayCommand(obj => View.DataGrid.BeginEdit())),
-                new MenuItem("Remove", new RelayCommand(obj => RemoveFile(SelectedItem.Path)), false, false)
+                new MenuItem("Remove", new RelayCommand(obj => RemoveFile(SelectedItem.Path)), false, false),
+                new MenuItem("Revert", new RelayCommand(obj => RevertSelectedFile()), false, false)
             };
         }
 
@@ -243,6 +261,17 @@ namespace MEdit.ViewModels
                 var item = Items.FirstOrDefault((x) => x.Path == filePath);
                 Items.Remove(item);
             }
+        }
+
+        void RevertSelectedFile()
+        {
+            var item = Items.FirstOrDefault((x) => x.Path == SelectedItem.Path);
+
+            var fileName = System.IO.Path.GetFileName(item.Path);
+            var originalItem = OriginalInfo[fileName];
+            item.Name = fileName;
+            item.IsChanged = false;
+            //SelectedItem = item;
         }
 
         private void ExecuteBrowse(object parameter)
