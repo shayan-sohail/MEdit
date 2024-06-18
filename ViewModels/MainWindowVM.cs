@@ -281,7 +281,16 @@ namespace MEdit.ViewModels
         }
         private void UpdateFields(object parameter)
         {
-            Application.Current.Shutdown(); // Exits the application
+            var str = string.Empty;
+            foreach (var item in Items)
+            {
+                if (item.IsChanged)
+                {
+                    string newFileName = Path.Combine(Path.GetDirectoryName(item.Path), item.Name);
+                    File.Move(item.Path, newFileName);
+                    item.IsChanged = false;
+                }
+            }
         }
         private void ExitApplication(object parameter)
         {
